@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoviExpress</title>
+
+    <link rel="stylesheet" href="index.css" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:wght@100;300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-container">
+        <div class="logo-container">
+          <h2 class="logo">MoviExpress</h2>
+        </div>
+
+        <div class="search-container">
+          <input type="text" placeholder="Search..." class="search-input" />
+          <button class="search-button">
+            <i class="fa-solid fa-search"></i>
+          </button>
+        </div>
+
+        <div class="meun-container">
+          <ul class="meun-list">
+            <li class="meun-list-item active">HOME</li>
+            <li class="meun-list-item">MOVIES</li>
+            <li class="meun-list-item">SERIES</li>
+            <li class="meun-list-item">POPULAR</li>
+            <li class="meun-list-item">TRENDS</li>
+          </ul>
+        </div>
+
+        <div class="profile-container">
+          <img
+            class="profile-picture"
+            src="images/nemi.jpeg"
+            alt="profile-picture"
+          />
+          <div class="profile-text-container">
+            <span class="profile-text">PROFILE</span>
+            <i class="fa-solid fa-sort-down"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <i class="left-meun-icon fa-solid fa-magnifying-glass"></i>
+      <i class="left-meun-icon fa-solid fa-house"></i>
+      <i class="left-meun-icon fa-solid fa-user"></i>
+      <i class="left-meun-icon fa-solid fa-bookmark"></i>
+      <i class="left-meun-icon fa-solid fa-tv"></i>
+      <i class="left-meun-icon fa-solid fa-cart-shopping"></i>
+    </div>
+
+    <div class="container">
+      <div class="content-container">
+        <div class="featured-content">
+          <img
+            class="featured-content-image"
+            src="images/19.jpg"
+            alt="featured-image"
+          />
+          <h1 class="featured-description">Go ahead, Stream free</h1>
+          <button class="watch-button">
+            <i class="fa-solid fa-play"></i>WATCH
+          </button>
+
+          
+
+        <div class="movie-list-container" id="New-Releases"></div>
+
+        <div class="movie-list-container" id="Popular-Movies"></div>
+
+        <div class="movie-list-container" id="Most-Watched"></div>
+
+        <div class="movie-list-container" id="Upcoming"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const apiKey = "d95a8129c7da03190402ca842719ea3f";
+        const categories = [
+          {
+            title: "New Releases",
+            apiUrl: "https://api.themoviedb.org/3/movie/now_playing",
+          },
+          {
+            title: "Popular Movies",
+            apiUrl: "https://api.themoviedb.org/3/movie/popular",
+          },
+          {
+            title: "Most Watched",
+            apiUrl: "https://api.themoviedb.org/3/movie/top_rated",
+          },
+          {
+            title: "Upcoming",
+            apiUrl: "https://api.themoviedb.org/3/movie/upcoming",
+          },
+        ];
+
+        categories.forEach((category) => {
+          fetch(`${category.apiUrl}?api_key=${apiKey}`)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              let titleContainer = document.querySelector(
+                `.${category.title.replace(/\s+/g, "-")}-title-container`
+              );
+              if (!titleContainer) {
+                titleContainer = document.createElement("div");
+                titleContainer.classList.add(
+                  "movie-list-title-container",
+                  `${category.title.replace(/\s+/g, "-")}-title-container`
+                );
+                titleContainer.innerHTML = `
+                        <h1 class="movie-list-title">${category.title}</h1>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    `;
+                document
+                  .querySelector(".content-container")
+                  .appendChild(titleContainer);
+              }
+              const wrapper = document.createElement("div");
+              wrapper.classList.add("movie-list-wrapper");
+
+              data.results.forEach((movie) => {
+                const movieListItem = document.createElement("div");
+                movieListItem.classList.add("movie-list-item");
+
+                const movieImg = document.createElement("img");
+                movieImg.classList.add("movie-list-item-img");
+                movieImg.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+                movieImg.alt = movie.title;
+
+                movieListItem.appendChild(movieImg);
+                wrapper.appendChild(movieListItem);
+              });
+
+              titleContainer.appendChild(wrapper);
+            })
+            .catch((error) => {
+              console.error(
+                `There was a problem fetching ${category.title}:`,
+                error
+              );
+            });
+        });
+      });
+    </script>
+  </body>
+</html>
